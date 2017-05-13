@@ -1,17 +1,17 @@
 var number = 1;
-
 var express = require('express');
   router = express.Router(),
   mongoose = require('mongoose'),
   Article = mongoose.model('Article');
   fs = require('fs');
   multer = require('multer');
+  delay = require('../process/delay')
   storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'files/')
     },
     filename: function (req, file, cb) {
-        cb(null, "file" + number + ".txt");
+        cb(null, "file" + number + ".json");
         number += 1;
   }
 })
@@ -50,6 +50,7 @@ router.post('/', upload.any(),function (req, res, next){
   res.send('OK');
 });
 
+router.get('/delay', delay.calculaDelay);
 
 
 router.get('/comprobacion', function (req, res, next){

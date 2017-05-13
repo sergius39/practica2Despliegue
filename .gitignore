@@ -1,2 +1,7 @@
 node_modules
 files
+.DS_Store
+.bowerrc
+.editorconfig
+.yo-rc.json
+bower.json
