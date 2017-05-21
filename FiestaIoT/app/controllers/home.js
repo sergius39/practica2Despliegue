@@ -5,7 +5,8 @@ var express = require('express');
   Article = mongoose.model('Article');
   fs = require('fs');
   multer = require('multer');
-  delay = require('../process/delay')
+  delay = require('../process/delay');
+  payload = require('../process/payload');
   storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'files/')
@@ -26,7 +27,8 @@ module.exports = function (app) {
 
 router.post('/', upload.any(),function (req, res, next){
   var titulo = "post";
-  var datos = req.files;
+  var datos =  req.files;
+
 
   var origen = "La información del hostname es " + req.hostname + ".  " + "La información de la IP es " + req.ip + ".  ";
   var seguridad = "La información es segura: " + req.secure + ".  ";
@@ -50,7 +52,7 @@ router.post('/', upload.any(),function (req, res, next){
   res.send('OK');
 });
 
-router.get('/delay', delay.calculaDelay);
+
 
 
 router.get('/comprobacion', function (req, res, next){
@@ -74,3 +76,8 @@ router.get('/comprobacionArchivo/:id', function (req, res, next){
     	res.send(data);
     });
 });
+
+
+//Rutas de cálculo de datos
+router.get('/delay', delay.calculaDelay);
+router.get('/payload', payload.calculaPayload);
