@@ -7,6 +7,7 @@ var express = require('express');
   multer = require('multer');
   delay = require('../process/delay');
   payload = require('../process/payload');
+  jitter = require('../process/jitter');
   storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'files/')
@@ -81,3 +82,4 @@ router.get('/comprobacionArchivo/:id', function (req, res, next){
 //Rutas de cálculo de datos
 router.get('/delay', delay.calculaDelay);
 router.get('/payload', payload.calculaPayload);
+router.get('/jitter', jitter.calculaJitter);
