@@ -1,4 +1,4 @@
-//Variable global. Array en el que se almacenan las diferencias de tiempo entre medidas tomadas consecutivamente en el tiempo
+﻿//Variable global. Array en el que se almacenan las diferencias de tiempo entre medidas tomadas consecutivamente en el tiempo
 var subs = [];
 
 var booleanJitter = false;
@@ -75,7 +75,7 @@ exports.calculaDelay = function(req, res) {
           aux1 = Date.parse(timeSTR);
 
           if(i != 0){
-              var resta = ((aux1 - aux2)/1000);
+              var resta = ((aux2 - aux1)/1000);
               //console.log("Esto es aux1: "+aux1);
               //console.log("Esto es aux2: "+aux2);
               //console.log("La resta es: "+resta);
