@@ -1,4 +1,5 @@
 var number = 1;
+var archivoTipo = "Ejemplo"
 var express = require('express');
   router = express.Router(),
   mongoose = require('mongoose'),
@@ -8,17 +9,58 @@ var express = require('express');
   delay = require('../process/delay');
   payload = require('../process/payload');
   jitter = require('../process/jitter');
+  geoLocation = require('../process/geoLocation');
   storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'files/')
     },
     filename: function (req, file, cb) {
         cb(null, "file" + number + ".json");
-        number += 1;
   }
 })
 
 var upload = multer({ storage: storage });
+
+calculoParametros = function(){
+  fs.readFile('files/file' + number + '.json', 'utf8', function(err, data) {  
+    if (err){
+      console.error("No existen más archivos para leer", err);
+      res.send("No existen más archivos para leer");
+      return;
+    }
+
+    var jsonContent = JSON.parse(data);
+    variables = jsonContent['vars'];
+
+    for(var i in variables){
+      varStr = JSON.stringify(variables[i]);
+      varString = varStr.substr(1,varStr.length-2);
+      console.log(varString);
+
+      if(varString === "lat"){
+        archivoTipo = "geo";
+        console.log(archivoTipo);
+      }
+      else if(varString === "time"){
+        archivoTipo = "net";
+      }
+    }
+
+  });
+
+
+  if(archivoTipo === "geo"){
+    geoLocation.calculaGeoLocation();
+    payload.calculaPayload();
+  }
+  else{
+    delay.calculaDelay();
+    payload.calculaPayload();
+    jitter.calculaJitter();
+  }
+
+  number += 1;
+}
 
 
 module.exports = function (app) {
@@ -50,9 +92,9 @@ router.post('/', upload.any(),function (req, res, next){
   	} 
   });
 
-  res.send('OK');
-});
+  calculoParametros();
 
+});
 
 
 
@@ -68,7 +110,7 @@ router.get('/comprobacion', function (req, res, next){
  });
 
 router.get('/comprobacionArchivo/:id', function (req, res, next){
-	fs.readFile('files/file' + req.params.id + '.txt', 'utf8', function(err, data) {  
+	fs.readFile('files/file' + req.params.id + '.json', 'utf8', function(err, data) {  
 		if (err){
     		console.error("No existen más archivos para leer", err);
     		res.send("No existen más archivos para leer");
@@ -83,3 +125,4 @@ router.get('/comprobacionArchivo/:id', function (req, res, next){
 router.get('/delay', delay.calculaDelay);
 router.get('/payload', payload.calculaPayload);
 router.get('/jitter', jitter.calculaJitter);
+router.get('/geoLocation', geoLocation.calculaGeoLocation);
