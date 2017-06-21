@@ -1,5 +1,5 @@
 var number = 1;
-var archivoTipo = "Ejemplo"
+var archivoTipo = "";
 var express = require('express');
   router = express.Router(),
   mongoose = require('mongoose'),
@@ -10,6 +10,7 @@ var express = require('express');
   payload = require('../process/payload');
   jitter = require('../process/jitter');
   geoLocation = require('../process/geoLocation');
+
   storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'files/')
@@ -35,25 +36,26 @@ calculoParametros = function(){
     for(var i in variables){
       varStr = JSON.stringify(variables[i]);
       varString = varStr.substr(1,varStr.length-2);
-      console.log(varString);
 
       if(varString === "lat"){
         archivoTipo = "geo";
-        console.log(archivoTipo);
       }
+
       else if(varString === "time"){
         archivoTipo = "net";
       }
     }
 
   });
+  console.log(archivoTipo);
 
 
   if(archivoTipo === "geo"){
-    geoLocation.calculaGeoLocation();
+    geoLocation.calculaGeoLocation(number);
     payload.calculaPayload();
   }
   else{
+  	console.log("no va bien");
     delay.calculaDelay();
     payload.calculaPayload();
     jitter.calculaJitter();

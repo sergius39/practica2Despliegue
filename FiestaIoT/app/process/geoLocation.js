@@ -8,14 +8,14 @@ calculoDouble = function(a){
   return numero;
 }
 
-exports.calculaGeoLocation = function(){
+exports.calculaGeoLocation = function(number){
   localizaciones = "";
   latMaxima = -90;
   latMinima = 90;
   longMaxima = -180;
   longMinima = 180;
 
-  fs.readFile('files/file' + '1' + '.json', 'utf8', function(err, data) {  
+  fs.readFile('files/file' + number + '.json', 'utf8', function(err, data) {  
       if (err){
         console.error("No existen más archivos para leer", err);
         res.send("No existen más archivos para leer");
