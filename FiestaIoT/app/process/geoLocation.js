@@ -15,7 +15,7 @@ exports.calculaGeoLocation = function(number){
   longMaxima = -180;
   longMinima = 180;
 
-  fs.readFile('files/file' + number + '.json', 'utf8', function(err, data) {  
+  fs.readFile('files/file1'  + '.json', 'utf8', function(err, data) {  
       if (err){
         console.error("No existen más archivos para leer", err);
         res.send("No existen más archivos para leer");

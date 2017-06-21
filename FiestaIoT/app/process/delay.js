@@ -22,6 +22,8 @@ var calculaMedia = function(){
   			
   		}
 
+    subs = [];
+    console.log("El count es: "+count);  
   	var media = sum/count;
   	console.log("El delay es: " + media);
     return media;
@@ -43,10 +45,12 @@ exports.jitterOrNo = function(jitterParam){
 }
 
 
-exports.calculaDelay = function(req, res) {
+exports.calculaDelay = function(number) {
 
-    //Se lee el archivo JSON
-    var content = fs.readFileSync('files/ejemplo.json');
+  
+      //Se lee el archivo JSON
+      var content = fs.readFileSync('files/file' + number + '.json');
+      console.log("El file en delay es: " + number);
       //Se parsea el documento, para tener un objeto JSON de Javascript
       var jsonContent = JSON.parse(content);
 
@@ -65,7 +69,7 @@ exports.calculaDelay = function(req, res) {
               var aux2 = aux1;
           }
 
-          console.log("Iteracion: " + i + ", Valor del campo time: " + jsonContent.items[i].time);
+          //console.log("Iteracion: " + i + ", Valor del campo time: " + jsonContent.items[i].time);
 
           //Se extrae el campo "time" de cada "item"
           var instant = jsonContent.items[i].time;
@@ -76,14 +80,12 @@ exports.calculaDelay = function(req, res) {
 
           if(i != 0){
               var resta = ((aux2 - aux1)/1000);
-              //console.log("Esto es aux1: "+aux1);
-              //console.log("Esto es aux2: "+aux2);
-              //console.log("La resta es: "+resta);
               subs.push(resta);
           }
 
 
   }
+
 
   if(booleanJitter === true){
 
@@ -94,9 +96,8 @@ exports.calculaDelay = function(req, res) {
   }
   
 
-    calculaMedia();
-      res.status(200);
-      res.send("OK");
+    return calculaMedia();
+
 
     
 };

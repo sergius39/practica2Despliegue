@@ -1,16 +1,13 @@
-exports.calculaJitter = function(req, res){
+exports.calculaJitter = function(number, delayCallback){
 
 
-    Article.findOne({}, {}, { sort: { '_id' : -1 }}, function(err, post){
-        //console.log(post.text[0].filename);
+    /*Article.findOne({}, {}, { sort: { '_id' : -1 }}, function(err, post){
         var file = post.text[0].filename;
         console.log("El file es: " + file);
-        if(file){
+        if(file){*/
 
-
-            console.log(file);
             //Se lee el archivo JSON
-            var content = fs.readFileSync('files/'+file);
+            var content = fs.readFileSync('files/file' + number + '.json');
             //Se parsea el documento, para tener un objeto JSON de Javascript
             var jsonContent = JSON.parse(content);
 
@@ -33,22 +30,15 @@ exports.calculaJitter = function(req, res){
 
             //Cambiamos el valor a true de la variable del módulo del delay que necesitamos para que dentro de la función calculaDelay, nos devuelva el delay y lo usemos para calcular el jitter
             delay.jitterOrNo(true);
-            //Calculamos el delay
-            var delaycalculado = delay.calculaDelay();
+            //Obtenemos el valor del delay
+            var delaycalculado = delayCallback;
 
             if(delaycalculado) {
 
-                console.log("El delay es: "+delaycalculado);
-                //var jittercalculado = ((lastInstant1 - lastInstant2)/delaycalculado);
+                console.log("El delay es (en el calculo del jitter): " + delaycalculado);
                 var jittercalculado = Math.abs((((lastInstant1 - lastInstant2)/1000)-delaycalculado));
                 console.log("El jitter es: " + jittercalculado);
-                res.send("SE CALCULA JITTER +DELAY");}
-                //console.log(jsonContent);
 
-
-
-            //res.send("OK");
-        } else{    res.send("no OK");}
-    
-    });
+            }
+             
 };

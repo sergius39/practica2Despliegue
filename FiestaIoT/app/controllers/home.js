@@ -22,8 +22,39 @@ var express = require('express');
 
 var upload = multer({ storage: storage });
 
-calculoParametros = function(){
-  fs.readFile('files/file' + number + '.json', 'utf8', function(err, data) {  
+delayCallback = function(jitterCallback){
+  var myDelay = delay.calculaDelay(number);
+  console.log("En el callback el delay es" + myDelay);
+  jitterCallback(number, myDelay);
+};
+
+
+calculoParametros = function(tipado){
+  console.log("Antes de llamar a callback");
+  tipado();
+  console.log("Despues de llamar a callback");
+  console.log("El tipo de archivo es: "+archivoTipo);
+  if(archivoTipo === "geo"){
+    geoLocation.calculaGeoLocation(number);
+    payload.calculaPayload(number);
+  }
+  else{
+    //delay.calculaDelay();
+    payload.calculaPayload(number);
+    delayCallback(jitter.calculaJitter);
+    //jitter.calculaJitter();
+  }
+
+  number += 1;
+};
+
+compruebaTipoArchivo = function(err) {
+
+  console.log("Entra en callback");
+
+  var data = fs.readFileSync('files/file' + number + '.json');
+
+    console.log("Lee el archivo ");
     if (err){
       console.error("No existen más archivos para leer", err);
       res.send("No existen más archivos para leer");
@@ -32,7 +63,6 @@ calculoParametros = function(){
 
     var jsonContent = JSON.parse(data);
     variables = jsonContent['vars'];
-
     for(var i in variables){
       varStr = JSON.stringify(variables[i]);
       varString = varStr.substr(1,varStr.length-2);
@@ -46,22 +76,6 @@ calculoParametros = function(){
       }
     }
 
-  });
-  console.log(archivoTipo);
-
-
-  if(archivoTipo === "geo"){
-    geoLocation.calculaGeoLocation(number);
-    payload.calculaPayload();
-  }
-  else{
-  	console.log("no va bien");
-    delay.calculaDelay();
-    payload.calculaPayload();
-    jitter.calculaJitter();
-  }
-
-  number += 1;
 }
 
 
@@ -94,7 +108,10 @@ router.post('/', upload.any(),function (req, res, next){
   	} 
   });
 
-  calculoParametros();
+  console.log("Antes de llamar a la principal");
+  calculoParametros(compruebaTipoArchivo);
+  console.log("Despues de llamar a la principal");
+  //compruebaTipoArchivo();
 
 });
 
