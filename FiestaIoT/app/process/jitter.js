@@ -1,3 +1,5 @@
+var request = require ('request');
+
 exports.calculaJitter = function(number, delayCallback){
 
 
@@ -36,8 +38,20 @@ exports.calculaJitter = function(number, delayCallback){
             if(delaycalculado) {
 
                 console.log("El delay es (en el calculo del jitter): " + delaycalculado);
-                var jittercalculado = Math.abs((((lastInstant1 - lastInstant2)/1000)-delaycalculado));
+                var jittercalculado = (Math.abs((((lastInstant1 - lastInstant2)/1000)-delaycalculado))).toFixed(2);
                 console.log("El jitter es: " + jittercalculado);
+
+                var SPARQLText = 'PREFIX Qos-Par: <http://vps165.cesvima.upm.es/qos-parameters#> INSERT DATA { <' + jsonContent.items[1].sensor + '> Qos-Par:hasJitter "' + jittercalculado + '^^http://www.w3.org/2001/XMLSchema#double" . }';
+                request({
+                    url: "http://vps165.cesvima.upm.es:3030/FiestaIot-Parameters/update",
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/sparql-update",  // <--Very important!!!
+                    },
+                    body: SPARQLText
+                }, function (error, response, body){
+                    console.log(SPARQLText);
+                });
 
             }
              
