@@ -1,10 +1,12 @@
+var request = require ('request');
+
 toRadians = function(degrees){
    return degrees * Math.PI / 180;
 }
 
 calculoDouble = function(a){
   b = JSON.stringify(a);
-  var numero = parseFloat(b.substr(1,12));
+  var numero = parseFloat(b.substr(1,b.indexOf('^')));
   return numero;
 }
 
@@ -15,7 +17,7 @@ exports.calculaGeoLocation = function(number){
   longMaxima = -180;
   longMinima = 180;
 
-  fs.readFile('files/file1'  + '.json', 'utf8', function(err, data) {  
+  var data = fs.readFile('files/file' + number + '.json', 'utf8', function(err, data) {  
       if (err){
         console.error("No existen más archivos para leer", err);
         res.send("No existen más archivos para leer");
@@ -24,20 +26,21 @@ exports.calculaGeoLocation = function(number){
       
       var jsonContent = JSON.parse(data);
       localizaciones = jsonContent['items'];
+      deployment = jsonContent['items'][0].deployment;
 
       if(localizaciones != undefined) {
 
       	for (var i in localizaciones) {
-          if(calculoDouble(localizaciones[i].lat) > latMaxima) {
+          if((calculoDouble(localizaciones[i].lat) > latMaxima) && (calculoDouble(localizaciones[i].lat) != 0)) {
             latMaxima = calculoDouble(localizaciones[i].lat);
           }
-          if(calculoDouble(localizaciones[i].lat) < latMinima) {
+          if((calculoDouble(localizaciones[i].lat) < latMinima) && (calculoDouble(localizaciones[i].lat) != 0)) {
             latMinima = calculoDouble(localizaciones[i].lat);
           }
-          if(calculoDouble(localizaciones[i].long) > longMaxima) {
+          if((calculoDouble(localizaciones[i].long) > longMaxima) && (calculoDouble(localizaciones[i].lat) != 0)) {
             longMaxima = calculoDouble(localizaciones[i].long);
           }
-          if(calculoDouble(localizaciones[i].long) < longMinima) {
+          if((calculoDouble(localizaciones[i].long) < longMinima) && (calculoDouble(localizaciones[i].lat) != 0)) {
             longMinima = calculoDouble(localizaciones[i].long);
           }
         }
@@ -70,15 +73,29 @@ exports.calculaGeoLocation = function(number){
 
         var distanciaLongitud = R * clong;
 
+        //console.log("la distancia en longitud es " + distanciaLongitud);
+        //console.log("la distancia en latitud es " + distanciaLatitud);
+
         //Calculamos ahora el área de efecto
 
-        var area = distanciaLatitud * distanciaLongitud;
-
-        console.log(localizaciones);
+        var area = ((distanciaLatitud * distanciaLongitud)/1e6).toFixed(4);
 
 
         console.log(area);
-        }
+
+        var SPARQLText = 'PREFIX Qos-Par: <http://vps165.cesvima.upm.es/qos-parameters#> INSERT DATA { <' + deployment + '> Qos-Par:hasGeoLocationArea "' + area + '^^http://www.w3.org/2001/XMLSchema#double" . }';
+        request({
+           url: "http://vps165.cesvima.upm.es:3030/FiestaIot-Parameters/update",
+           method: "POST",
+           headers: {
+              "content-type": "application/sparql-update",  // <--Very important!!!
+           },
+           body: SPARQLText
+        }, function (error, response, body){
+         console.log(SPARQLText);
+        });
+      }
+
         else{
         	console.log("la información recibida es incorrecta");
         }

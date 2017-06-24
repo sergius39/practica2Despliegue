@@ -3,6 +3,10 @@ var subs = [];
 
 var booleanJitter = false;
 
+var jsonContent;
+
+var request = require ('request');
+
 var calculaMedia = function(){
 
 	//Variable en la que se va a acumular la suma de las diferencias de las medidas
@@ -24,8 +28,21 @@ var calculaMedia = function(){
 
     subs = [];
     console.log("El count es: "+count);  
-  	var media = sum/count;
+  	var media = (sum/count).toFixed(2);
   	console.log("El delay es: " + media);
+
+    var SPARQLText = 'PREFIX Qos-Par: <http://vps165.cesvima.upm.es/qos-parameters#> INSERT DATA { <' + jsonContent.items[1].sensor + '> Qos-Par:hasDelay "' + media + '^^http://www.w3.org/2001/XMLSchema#double" . }';
+        request({
+           url: "http://vps165.cesvima.upm.es:3030/FiestaIot-Parameters/update",
+           method: "POST",
+           headers: {
+              "content-type": "application/sparql-update",  // <--Very important!!!
+           },
+           body: SPARQLText
+        }, function (error, response, body){
+         console.log(SPARQLText);
+        });
+
     return media;
 
 
@@ -52,7 +69,7 @@ exports.calculaDelay = function(number) {
       var content = fs.readFileSync('files/file' + number + '.json');
       console.log("El file en delay es: " + number);
       //Se parsea el documento, para tener un objeto JSON de Javascript
-      var jsonContent = JSON.parse(content);
+      jsonContent = JSON.parse(content);
 
       //Borrado de la primera entrada del JSON. Así solo se trabaja con la variable que interesa
       delete jsonContent['vars'];

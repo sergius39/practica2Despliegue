@@ -30,10 +30,8 @@ delayCallback = function(jitterCallback){
 
 
 calculoParametros = function(tipado){
-  console.log("Antes de llamar a callback");
   tipado();
-  console.log("Despues de llamar a callback");
-  console.log("El tipo de archivo es: "+archivoTipo);
+  console.log("El tipo de archivo es: " + archivoTipo);
   if(archivoTipo === "geo"){
     geoLocation.calculaGeoLocation(number);
     payload.calculaPayload(number);
@@ -49,8 +47,6 @@ calculoParametros = function(tipado){
 };
 
 compruebaTipoArchivo = function(err) {
-
-  console.log("Entra en callback");
 
   var data = fs.readFileSync('files/file' + number + '.json');
 
@@ -108,9 +104,7 @@ router.post('/', upload.any(),function (req, res, next){
   	} 
   });
 
-  console.log("Antes de llamar a la principal");
   calculoParametros(compruebaTipoArchivo);
-  console.log("Despues de llamar a la principal");
   //compruebaTipoArchivo();
 
 });
